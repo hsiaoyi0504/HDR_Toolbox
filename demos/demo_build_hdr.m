@@ -11,11 +11,13 @@
 %       Copyright 2015 (c)
 %
 
-clear all;
-%name_folder='stack';
-%format='jpg';
-name_folder = 'Memorial_SourceImages';
-format = 'png';
+
+
+
+
+
+name_folder = 'stack';
+format = 'jpg';
 
 disp('1) Read a stack of LDR images');
 stack = ReadLDRStack(name_folder, format);
