@@ -65,25 +65,45 @@ if(size(stack, 4) ~= length(stack_exposure))
     error('stack and stack_exposure have different number of exposures');
 end
 
-stack = normalizeFromAnything(stack);
+%stack = normalizeFromAnything(stack);
 
 col = size(stack, 3);
 
 %Weight function
 W = WeightFunction(0:(1 / 255):1, 'Deb97');
-
+%{
+W=0:255;
+W(W>255/2)=255-W(W>255/2);
+W(W<255/2)=W(W<255/2)-0;
+W=W';
+%}
 %stack sub-sampling
-stack_hist = ComputeLDRStackHistogram(stack);
-stack_samples = GrossbergSampling(stack_hist, nSamples);
+%stack_hist = ComputeLDRStackHistogram(stack);
+%stack_samples = GrossbergSampling(stack_hist, nSamples);
 
 %recovering the CRF
 lin_fun = zeros(256, col);
 log_stack_exposure = log(stack_exposure);
+N=256;
 
 max_lin_fun = zeros(col, 1);
 
 for i=1:col
-    g = gsolve(stack_samples(:,:,i), log_stack_exposure, smoothing_term, W);
+    
+    
+    for k=1:N
+        for j=1:length(stack_exposure)
+            stack_samples(k,j)=stack(k,1,i,j);
+        end
+    end
+    size(stack_samples(:,:))
+    g = gsolve(stack_samples(:,:), log_stack_exposure, smoothing_term, W);
+    %g = gsolve(stack_samples(:,:,i), log_stack_exposure, smoothing_term, W);
+    %size(Z)
+    %size(stack(1,:,i,:))
+    %size(log_stack_exposure)
+    %size(W)
+    %g = gsolve(Z, log_stack_exposure, smoothing_term, W);
     g = exp(g);
     
     lin_fun(:,i) = g;
